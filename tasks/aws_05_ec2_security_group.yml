@@ -1,0 +1,49 @@
+#                                 __                 __
+#    __  ______  ____ ___  ____ _/ /____  ____  ____/ /
+#   / / / / __ \/ __ `__ \/ __ `/ __/ _ \/ __ \/ __  /
+#  / /_/ / /_/ / / / / / / /_/ / /_/  __/ /_/ / /_/ /
+#  \__, /\____/_/ /_/ /_/\__,_/\__/\___/\____/\__,_/
+# /____                     matthewdavis.io, holla!
+#
+# https://docs.ansible.com/ansible/latest/modules/ec2_group_module.html
+# 
+- name: Create Main Security Group
+  ec2_group:
+    name: "{{ vpc_name }}-security-group"
+    description: "Access control for {{ vpc_name }}"
+    vpc_id: "{{ new_vpc_id }}"
+    region: "{{ aws_region }}"
+    tags:
+      KubernetesCluster: "{{ kubernetes_cluster }}"
+    rules:
+      - proto: "tcp"
+        from_port: "22"
+        to_port: "22"
+        cidr_ip: "{{ my_ip }}/32"
+        rule_desc: "Remote SSH Access"
+  register: my_main_sg
+
+- name: Set Main SG ID
+  set_fact:
+    main_sg_id: "{{ my_main_sg.group_id }}"
+
+- name: Update Security Group
+  ec2_group:
+    name: "{{ vpc_name }}-security-group"
+    description: "Private Instances SG"
+    vpc_id: "{{ new_vpc_id }}"
+    region: "{{ aws_region }}"
+    rules:
+      - proto: "all"
+        group_id: "{{ main_sg_id }}"
+        rule_desc: "Internal Communication"
+      - proto: "tcp"
+        from_port: "22"
+        to_port: "22"
+        cidr_ip: "0.0.0.0/32"
+        rule_desc: "Remote SSH Access"
+      - proto: "tcp"
+        from_port: "6443"
+        to_port: "6443"
+        cidr_ip: "0.0.0.0/32"
+        rule_desc: "Remote kubectl API Access"

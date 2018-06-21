@@ -1,0 +1,49 @@
+# 
+#                                 __                 __
+#    __  ______  ____ ___  ____ _/ /____  ____  ____/ /
+#   / / / / __ \/ __ `__ \/ __ `/ __/ _ \/ __ \/ __  /
+#  / /_/ / /_/ / / / / / / /_/ / /_/  __/ /_/ / /_/ /
+#  \__, /\____/_/ /_/ /_/\__,_/\__/\___/\____/\__,_/
+# /____                     matthewdavis.io, holla!
+#
+# 
+# Create EC2 Instance with GP2 SSD Drive
+# https://docs.ansible.com/ansible/latest/modules/ec2_module.html
+#
+- name: "Create ec2 instance ({{ name }})"
+  ec2:
+    region:             "{{ aws_region }}"    
+    key_name:           "{{ aws_keypair_name }}"
+    image:              "{{ aws_centos_ami }}"
+    group_id:           "{{ main_sg_id }}"
+    instance_type:      "{{ aws_default_size }}"
+    vpc_subnet_id:      "{{ new_subnet_1_id }}"
+    instance_profile_name: "{{ role }}"
+    assign_public_ip:   yes
+    wait:               yes
+    wait_timeout:       500
+    instance_tags:
+      Name:              "{{ name }}"
+      KubernetesCluster: "{{ kubernetes_cluster }}"
+    volumes:
+      - device_name:    /dev/xvda
+        volume_type:    gp2
+        volume_size:    100
+    count_tag:
+      Name:             "{{ name }}"
+    exact_count:        1
+  register:             ec2instance
+
+# - name: "Add new instance to host group ({{ ec2instance.instance_ids }})"
+#   add_host:
+#     name:               "{{ name }}"
+#     hostname:           "{{ item.public_ip }}"
+#     groupname:          launched
+#   with_items:           "{{ ec2instance.instances }}"
+
+- name: "Wait for the instance(s) to boot by checking the ssh port ({{ ec2instance.instance_ids }})"
+  wait_for:             host={{item.public_dns_name}} port=22 delay=60 timeout=320 state=started
+  with_items:           "{{ ec2instance.instances }}"
+
+
+

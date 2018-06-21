@@ -1,0 +1,21 @@
+#                                 __                 __
+#    __  ______  ____ ___  ____ _/ /____  ____  ____/ /
+#   / / / / __ \/ __ `__ \/ __ `/ __/ _ \/ __ \/ __  /
+#  / /_/ / /_/ / / / / / / /_/ / /_/  __/ /_/ / /_/ /
+#  \__, /\____/_/ /_/ /_/\__,_/\__/\___/\____/\__,_/
+# /____                     matthewdavis.io, holla!
+#
+# https://docs.ansible.com/ansible/latest/modules/ec2_eip_module.html
+# 
+# Now we create an AWS Elastic IP.
+# This is the IP address we will attach to the NAT Gatway.
+# From that moment, we will own that IP address.
+# That means if later we want to use a different service for NAT,
+# we will be able to use that IP. Pretty useful.  
+# 
+# - name: Allocate an elastic IP inside the new VPC for the NAT Gateway
+#   ec2_eip:
+#     region: "{{ aws_region }}"
+#     in_vpc: yes
+#     device_id: "{{ new_nat_gateway_id }}"
+#   register: eip

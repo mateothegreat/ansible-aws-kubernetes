@@ -1,0 +1,23 @@
+#                                 __                 __
+#    __  ______  ____ ___  ____ _/ /____  ____  ____/ /
+#   / / / / __ \/ __ `__ \/ __ `/ __/ _ \/ __ \/ __  /
+#  / /_/ / /_/ / / / / / / /_/ / /_/  __/ /_/ / /_/ /
+#  \__, /\____/_/ /_/ /_/\__,_/\__/\___/\____/\__,_/
+# /____                     matthewdavis.io, holla!
+#
+#
+- name: Create Inline IAM Policy for Kubernetes Master Nodes
+  iam_policy:
+    state: present
+    iam_type: role
+    iam_name: "{{ kubernetes_iam_master_role }}"
+    policy_name: "{{ kubernetes_iam_master_policy }}"
+    policy_json: "{{ lookup('file','kubernetes-master-policy.json') }}"
+
+- name: Create Inline IAM Policy for Kubernetes Worker Nodes
+  iam_policy:
+    state: present
+    iam_type: role
+    iam_name: "{{ kubernetes_iam_worker_role }}"
+    policy_name: "{{ kubernetes_iam_worker_policy }}"
+    policy_json: "{{ lookup('file','kubernetes-minion-policy.json') }}"

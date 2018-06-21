@@ -1,0 +1,74 @@
+# 
+#                                 __                 __
+#    __  ______  ____ ___  ____ _/ /____  ____  ____/ /
+#   / / / / __ \/ __ `__ \/ __ `/ __/ _ \/ __ \/ __  /
+#  / /_/ / /_/ / / / / / / /_/ / /_/  __/ /_/ / /_/ /
+#  \__, /\____/_/ /_/ /_/\__,_/\__/\___/\____/\__,_/
+# /____                     matthewdavis.io, holla!
+#
+#
+# This is an Ansible "Playbook" that contains instructions
+# on what to do and where to get configuration data from (vars):
+#
+- name: Create AWS Environment
+  
+  #
+  # Run these tasks on localhost directly:
+  #
+  hosts: localhost
+  
+  #
+  # Gather the current configuration from all hosts
+  # defined in the inventory file:
+  #
+  gather_facts: False
+  
+  #
+  # Include variables from configuration files:
+  #
+  vars_files:
+    - vars/aws.yml
+    - vars/aws_credentials.yml
+
+  #
+  # Execute these tasks by importing their instructions:
+  #
+  tasks:
+    - import_tasks: tasks/aws_00_iam_roles.yml
+    - import_tasks: tasks/aws_00_iam_policies.yml
+    - import_tasks: tasks/aws_01_vpc_new.yml
+    - import_tasks: tasks/aws_01_vpc_subnets.yml
+    - import_tasks: tasks/aws_02_vpc_internet_gateway.yml
+    # - import_tasks: tasks/aws_03_vpc_nat_gateway.yml
+    # - import_tasks: tasks/aws_03_vpc_nat_elasticip.yml
+    - import_tasks: tasks/aws_04_vpc_route_tables.yml
+    - import_tasks: tasks/aws_05_ec2_security_group.yml
+
+    # 
+    # Kubernetes Master Nodes
+    #
+    # This is a loop that will execute the same included
+    # task for each item defined under loop:
+    #
+    - include_tasks: tasks/aws_11_ec2_instance.yml
+      vars:
+        name: "{{ item }}"
+        role: "{{ kubernetes_iam_master_role }}"
+      loop:
+        -  "{{ vpc_name }}-master-01"
+
+    #
+    # Kubernetes Worker Nodes
+    #
+    # This is a loop that will execute the same included
+    # task for each item defined under loop:
+    #
+    - include_tasks: tasks/aws_11_ec2_instance.yml
+      vars:
+        name: "{{ item }}"
+        role: "{{ kubernetes_iam_worker_role }}"
+      loop:
+        -  "{{ vpc_name }}-worker-01"
+        -  "{{ vpc_name }}-worker-02"
+
+

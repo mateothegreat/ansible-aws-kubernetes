@@ -1,0 +1,84 @@
+#                                 __                 __
+#    __  ______  ____ ___  ____ _/ /____  ____  ____/ /
+#   / / / / __ \/ __ `__ \/ __ `/ __/ _ \/ __ \/ __  /
+#  / /_/ / /_/ / / / / / / /_/ / /_/  __/ /_/ / /_/ /
+#  \__, /\____/_/ /_/ /_/\__,_/\__/\___/\____/\__,_/
+# /____                     matthewdavis.io, holla!
+#
+#
+- name:               "Create VPC"
+  ec2_vpc_net:
+    name:             "{{ vpc_name }}"
+    cidr_block:       "{{ vpc_cidr_block }}"
+    region:           "{{ aws_region }}"
+    state:            "present"
+    tags:             {"KubernetesCluster": "kubernetes.io/cluster/cluster.local"}
+  register: new_vpc
+
+- name:               Set VPC ID in variable
+  set_fact:
+    new_vpc_id:           "{{ new_vpc.vpc.id }}"
+
+- debug: var=new_vpc
+- debug: var=new_vpc_id
+
+# - name: Gather facts about VPC
+#   ec2_vpc_subnet_facts:
+#     region:           "{{ aws_region }}"
+#     aws_access_key:   "{{ aws_access_key }}"
+#     aws_secret_key:   "{{ aws_secret_key }}"  
+#     filters:
+#       "tag:Name": "{{ vpc_name }}"
+#   register: new_vpc
+
+# - debug: var=new_vpc
+
+# - name:               "Set VPC ID in variable"
+#   set_fact:
+#     new_vpc_id:       "{{ new_vpc.vpc.id }}"
+
+# - debug: var=vpc_id
+
+#   ---
+
+# - name:               Create VPC
+#   ec2_vpc_net:
+#     name:             "{{ vpc_name }}"
+#     cidr_block:       "{{ vpc_cidr_block }}"
+#     region:           "{{ aws_region }}"
+#     aws_access_key:   "{{ aws_access_key }}"
+#     aws_secret_key:   "{{ aws_secret_key }}"
+#     state:            "present"
+#     resource_tags:    {"KubernetesCluster": "kubernetes.io/cluster/cluster.local"}
+#     internet_gateway: True
+#     subnets:
+#       - cidr: 10.0.1.0/24
+#         az: "{{ aws_region }}a"
+#         resource_tags: {"KubernetesCluster": "kubernetes.io/cluster/cluster.local"}
+#       - cidr: 10.0.2.0/24
+#         az: "{{ aws_region }}b"
+#         resource_tags: {"KubernetesCluster": "kubernetes.io/cluster/cluster.local"}
+#       - cidr: 10.0.3.0/24
+#         az: "{{ aws_region }}c"
+#         resource_tags: {"KubernetesCluster": "kubernetes.io/cluster/cluster.local"}
+#     route_tables:
+#       - subnets:
+#           # - 10.0.1.0/24
+#           - 10.0.2.0/24
+#           - 10.0.3.0/24
+#         routes:
+#           - dest: 0.0.0.0/0
+#             gw: igw
+#       - subnets:
+#           - 10.0.1.0/24
+#         routes:
+#           - dest: 0.0.0.0/0
+#             gw: igw
+
+#   register: new_vpc
+
+# - name:               Set VPC ID in variable
+#   set_fact:
+#     vpc_id:           "{{ new_vpc.vpc.id }}"
+
+# - debug: var=vpc_id

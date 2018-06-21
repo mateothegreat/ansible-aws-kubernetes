@@ -1,0 +1,27 @@
+my_ip:                        "96.83.34.140"
+aws_region:                   "eu-central-1"
+aws_default_size:             "t2.small"
+aws_instance_type:            "t2.small"
+aws_image:                    "ami-dd3c0f36"
+aws_keypair_name:             "k8-ums"
+aws_centos_ami:               "ami-dd3c0f36"
+
+# VPC Information
+vpc_name:                     "k8-ansible-vpc-01"
+vpc_cidr_block:               "10.0.0.0/16"
+
+# VPC Subnets
+subnet_1_cidr:                "10.0.0.0/24"
+subnet_2_cidr:                "10.0.1.0/24"
+
+# Custom stuff
+aws_vm_prefix:                "ansible-vmdev"
+
+#
+# Kubernetes
+#
+kubernetes_cluster:           "kubernetes.io/cluster/cluster.local"
+kubernetes_iam_master_role:   "k8-master-node-role"
+kubernetes_iam_master_policy: "k8-master-node-policy"
+kubernetes_iam_worker_role:   "k8-worker-node-role"
+kubernetes_iam_worker_policy: "k8-worker-node-policy"

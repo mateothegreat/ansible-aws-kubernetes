@@ -1,0 +1,43 @@
+#                                 __                 __
+#    __  ______  ____ ___  ____ _/ /____  ____  ____/ /
+#   / / / / __ \/ __ `__ \/ __ `/ __/ _ \/ __ \/ __  /
+#  / /_/ / /_/ / / / / / / /_/ / /_/  __/ /_/ / /_/ /
+#  \__, /\____/_/ /_/ /_/\__,_/\__/\___/\____/\__,_/
+# /____                     matthewdavis.io, holla!
+#
+#
+- name:               Create Subnet 1/2
+  ec2_vpc_subnet:
+    state:            "present"
+    vpc_id:           "{{ new_vpc_id }}"
+    cidr:             "{{ subnet_1_cidr }}"
+    az:               "{{ aws_region }}a"
+    region:           "{{ aws_region }}"
+    resource_tags:
+      Name:           "{{ vpc_name }}-subnet-01"
+      KubernetesCluster: "{{ kubernetes_cluster }}"
+  register: new_subnet_1
+
+- name:               Set Public Subnet ID in variable
+  set_fact:
+    new_subnet_1_id: "{{ new_subnet_1.subnet.id }}"
+
+- debug: var=new_subnet_1_id
+
+- name:               Create Subnet 2/2
+  ec2_vpc_subnet:
+    state:            "present"
+    vpc_id:           "{{ new_vpc_id }}"
+    cidr:             "{{ subnet_2_cidr }}"
+    az:               "{{ aws_region }}b"
+    region:           "{{ aws_region }}"
+    resource_tags:
+      Name:           "{{ vpc_name }}-subnet-02"
+      KubernetesCluster: "{{ kubernetes_cluster }}"
+  register: new_subnet_2
+
+- name:               Store Subnet IDs
+  set_fact:
+    new_subnet_2_id: "{{ new_subnet_2.subnet.id }}"
+
+- debug: var=new_subnet_2_id

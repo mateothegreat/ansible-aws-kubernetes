@@ -1,0 +1,9 @@
+#
+# Holds roles to be installed prior to executing playbooks:
+#
+#   ansible-galaxy install -r requirements.yml
+#
+
+# Install roles from ansible galaxy
+#
+# - src: geerlingguy.postgresql

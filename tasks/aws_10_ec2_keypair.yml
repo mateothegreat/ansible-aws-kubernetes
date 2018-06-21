@@ -1,0 +1,17 @@
+#                                 __                 __
+#    __  ______  ____ ___  ____ _/ /____  ____  ____/ /
+#   / / / / __ \/ __ `__ \/ __ `/ __/ _ \/ __ \/ __  /
+#  / /_/ / /_/ / / / / / / /_/ / /_/  __/ /_/ / /_/ /
+#  \__, /\____/_/ /_/ /_/\__,_/\__/\___/\____/\__,_/
+# /____                     matthewdavis.io, holla!
+#
+#
+- name: Create ec2 Keypair using local PublicKey
+  tags: 
+    - keypair
+  local_action:
+    module: ec2_key
+    region: "{{ aws_region }}"
+    name: "{{ aws_keypair_name }}"
+    key_material: "{{ item }}"
+  with_file: ~/.ssh/id_rsa.pub

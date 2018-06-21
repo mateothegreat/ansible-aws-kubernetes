@@ -1,0 +1,21 @@
+#                                 __                 __
+#    __  ______  ____ ___  ____ _/ /____  ____  ____/ /
+#   / / / / __ \/ __ `__ \/ __ `/ __/ _ \/ __ \/ __  /
+#  / /_/ / /_/ / / / / / / /_/ / /_/  __/ /_/ / /_/ /
+#  \__, /\____/_/ /_/ /_/\__,_/\__/\___/\____/\__,_/
+# /____                     matthewdavis.io, holla!
+#
+#
+# https://docs.ansible.com/ansible/2.5/modules/iam_role_module.html
+# 
+- name: Create IAM Role for Kubernetes Master Nodes
+  iam_role:
+    name: "{{ kubernetes_iam_master_role }}"
+    assume_role_policy_document: "{{ lookup('file','kubernetes-master-role.json') }}"
+    description: "IAM Role for Kubernetes Master Nodes"
+
+- name: Create IAM Role for Kubernetes Worker Nodes
+  iam_role:
+    name: "{{ kubernetes_iam_worker_role }}"
+    assume_role_policy_document: "{{ lookup('file','kubernetes-minion-role.json') }}"
+    description: "IAM Role for Kubernetes Master Nodes"

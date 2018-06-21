@@ -1,0 +1,54 @@
+#                                 __                 __
+#    __  ______  ____ ___  ____ _/ /____  ____  ____/ /
+#   / / / / __ \/ __ `__ \/ __ `/ __/ _ \/ __ \/ __  /
+#  / /_/ / /_/ / / / / / / /_/ / /_/  __/ /_/ / /_/ /
+#  \__, /\____/_/ /_/ /_/\__,_/\__/\___/\____/\__,_/
+# /____                     matthewdavis.io, holla!
+#
+# 
+# https://docs.ansible.com/ansible/latest/modules/ec2_vpc_route_table_module.html
+# 
+# 
+# We will have one RT for the public subnet,
+# and one for the private subnet.
+# You can see that the Route Table for the private subnet
+# will redirect default destinations to the NAT Gateway
+# and the Route Table for the public subnet will use the
+# Internet Gateway.
+# 
+# We don't see it here, but the Route Tables will also contain 
+# a route for resources inside the VPC, so that if we need 
+# to reach an internal resource, we don't go to the Internet
+# Gateway or the NAT Gateway.
+
+# 
+# Subnet 1/2 Route Table
+# 
+- name: Set up subnet 1/2 route table
+  ec2_vpc_route_table:
+    vpc_id: "{{ new_vpc_id }}"
+    region: "{{ aws_region }}"
+    tags:
+      Name: "{{ vpc_name }}-subnet-01-routes"
+      KubernetesCluster: "{{ kubernetes_cluster }}"
+    subnets:
+      - "{{ new_subnet_1_id }}"
+    routes:
+      - dest: "0.0.0.0/0"
+        gateway_id: "{{ new_igw_id }}"
+
+# 
+# Subnet 2/2 Route Table
+# 
+# - name: Set up subnet 2/2 route table
+#   ec2_vpc_route_table:
+#     vpc_id: "{{ new_vpc_id }}"
+#     region: "{{ aws_region }}"
+#     tags:
+#       Name: "{{ vpc_name }}-subnet-02-routes"
+#       KubernetesCluster: "{{ kubernetes_cluster }}"
+#     subnets:
+#       - "{{ new_subnet_2_id }}"
+#     routes:
+#       - dest: "0.0.0.0/0"
+#         gateway_id: "{{ new_nat_gateway_id }}"
